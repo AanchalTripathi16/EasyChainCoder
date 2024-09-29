@@ -21,7 +21,22 @@ body {
 }
 
 @layer utilities {
+  .screen-container {
+    @apply max-w-[100vw] mx-auto  w-full;
+  }
   .text-balance {
     text-wrap: balance;
   }
+}
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 20s linear infinite;
 }
