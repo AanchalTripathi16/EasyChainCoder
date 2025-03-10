@@ -17,6 +17,7 @@ import { getPoolLists } from "@/services/userService";
 interface ISwapState {
   setSelectedToNetwork: Dispatch<any>;
   SwapLiquidity: () => Promise<void>;
+  selectedToNetwork: any;
 }
 
 interface User {
@@ -288,7 +289,9 @@ export default function SwapProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <LoginContext.Provider value={{ setSelectedToNetwork, SwapLiquidity }}>
+    <LoginContext.Provider
+      value={{ selectedToNetwork, setSelectedToNetwork, SwapLiquidity }}
+    >
       {children}
     </LoginContext.Provider>
   );

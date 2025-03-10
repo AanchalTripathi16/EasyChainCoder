@@ -16,6 +16,7 @@ export default function Header() {
       <div className="flex flex-row space-x-8 text-gray-500 text-base font normal">
         {navLinks.map((item) => (
           <button
+            key={item.dex}
             disabled={item.dex == "about"}
             className={`hover:scale-110 ${
               selectedLink == item.dex && "text-white"

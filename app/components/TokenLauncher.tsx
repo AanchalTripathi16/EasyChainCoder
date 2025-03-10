@@ -151,6 +151,10 @@ const TokenLauncher = () => {
     if (Object.keys(newErrors).length === 0) {
       console.log("Form data:", formData);
       // Handle form submission
+      if (!window.ethereum) {
+        console.error("Ethereum provider not found");
+        return;
+      }
       const provider = new ethers.BrowserProvider(window.ethereum);
       const deploy = await deployTokenContract();
       try {

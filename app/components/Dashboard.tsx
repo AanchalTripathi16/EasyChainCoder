@@ -8,13 +8,30 @@ import Dex from "./Dex";
 import { useLoginContext } from "@/contexts/LoginContext";
 import BlockchainMarquee from "./HeroMarquee";
 
-let ethereum: any = null;
+// Define ethereum interface
+interface EthereumProvider {
+  isMetaMask?: boolean;
+  providers?: EthereumProvider[];
+  request: (args: { method: string; params?: any[] }) => Promise<any>;
+  on: (event: string, callback: (...args: any[]) => void) => void;
+  selectedAddress?: string;
+  [key: string]: any;
+}
+
+// Extend Window interface
+declare global {
+  interface Window {
+    ethereum?: EthereumProvider;
+  }
+}
+
+let ethereum: EthereumProvider | null = null;
 if (typeof window !== "undefined") {
-  ethereum = window?.ethereum;
+  ethereum = window?.ethereum || null;
 }
 
 const Dashboard = () => {
-  const videoRef = useRef<any>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const { address, setAddress } = useLoginContext();
   const [loading, setLoading] = useState<boolean>(false);
   const connectMetamask = async () => {
@@ -29,8 +46,9 @@ const Dashboard = () => {
       setAddress(account);
       setLoading(false);
 
-      let justProvider =
-        ethereum?.providers?.find((e: any) => e?.isMetaMask) || ethereum;
+      const justProvider =
+        ethereum?.providers?.find((e: EthereumProvider) => e?.isMetaMask) ||
+        ethereum;
     } catch (error) {
       console.log(error);
     } finally {

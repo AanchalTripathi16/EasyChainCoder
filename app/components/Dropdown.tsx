@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
-let ethereum: any = null;
-if (typeof window !== "undefined") {
-  ethereum = window?.ethereum;
+interface DropdownOption {
+  id: string;
+  value: string;
+  [key: string]: any;
 }
 
 const Dropdown = ({
@@ -12,17 +13,16 @@ const Dropdown = ({
   handleClick,
   value,
 }: {
-  isOpen: any;
-  setIsOpen: any;
-  options: any;
-  handleClick: any;
-  value: any;
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+  options: DropdownOption[];
+  handleClick: (option: DropdownOption) => void;
+  value: string;
 }) => {
-  // const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef: any = useRef(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Toggles the dropdown state
-  const toggleDropdown = (e: any) => {
+  const toggleDropdown = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsOpen(!isOpen);
@@ -30,8 +30,11 @@ const Dropdown = ({
 
   // Detects click outside the dropdown to close it
   useEffect(() => {
-    const handleClickOutside = (event: any) => {
-      if (dropdownRef.current && !dropdownRef.current?.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current?.contains(event.target as Node)
+      ) {
         setIsOpen(false); // Close dropdown if clicked outside
       }
     };
@@ -52,8 +55,7 @@ const Dropdown = ({
           aria-expanded={isOpen}
           aria-haspopup="true"
         >
-          {options?.find((e: any) => e.value === value)?.id ??
-            "Select Chain ID"}
+          {options?.find((e) => e.value === value)?.id ?? "Select Chain ID"}
           <svg
             className="-mr-1 ml-2 h-5 w-5"
             xmlns="http://www.w3.org/2000/svg"
@@ -79,12 +81,12 @@ const Dropdown = ({
           aria-labelledby="menu-button"
         >
           <div className="py-1" role="none">
-            {options?.map((e: any, i: any) => (
+            {options?.map((e, i) => (
               <button
                 key={i}
                 className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-300"
                 role="menuitem"
-                id="menu-item-0"
+                id={`menu-item-${i}`}
                 onClick={() => {
                   handleClick(e);
                   setIsOpen(false);

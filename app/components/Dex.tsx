@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Header from "./Header";
 
 import Swap from "./Swap";
@@ -29,7 +29,7 @@ const Dex = () => {
     if (selectedLink == "home") {
       setRoute(null);
     }
-  }, [selectedLink]);
+  }, [selectedLink, setRoute]);
   return (
     <div className="relative w-full  h-full flex flex-col justify-center items-center text-lg font-semibold    text-white bg-gradient-to-r from-blue-900 to-purple-900">
       <Header />
@@ -37,27 +37,7 @@ const Dex = () => {
         {route == null ? (
           selectedLink == "home" ? (
             <div className="relative flex flex-row space-x-4 ">
-              {routes.map((item: any, index) => (
-                // <button
-                //   className="w-40 h-40 rounded-full bg-gray-800 flex items-center justify-center animate-spin-slow"
-                //   onClick={() => {
-                //     setRoute(item.route);
-                //     setSelectedLink(null);
-                //   }}
-                // >
-                //   {/* Dotted outer circle */}
-                //   <div className="absolute inset-0 rounded-full border-4 border-cyan-500 border-dashed animate-spin-slow "></div>
-                //   {/* Inner circle with gradient */}
-                //   <div className="w-32 h-32 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 flex items-center justify-center  hover:scale-110">
-                //     <div className="w-28 h-28 rounded-full bg-gray-900 flex items-center justify-center relative">
-                //       {/* Step number */}
-
-                //       <span className=" absolute text-white tex-center font-bold ">
-                //         {item.name}
-                //       </span>
-                //     </div>
-                //   </div>
-                // </button>
+              {routes.map((item, index) => (
                 <button
                   key={index}
                   className="flex flex-col items-center"

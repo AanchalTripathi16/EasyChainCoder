@@ -2,12 +2,13 @@ export const sleepTimer = async (milliseconds: number): Promise<unknown> =>
   await new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 export function addCommas(number: number): string {
-  let parts = number.toString().split(".");
-  let integerPart = parts[0];
-  let decimalPart = parts[1] || "";
+  const parts = number.toString().split(".");
+  const integerPart = parts[0];
+  const decimalPart = parts[1] || "";
 
-  let reversedInteger: any = integerPart.split("").reverse().join("");
-  let commaInteger: any = reversedInteger.match(/\d{1,3}/g).join(",");
+  const reversedInteger: string = integerPart.split("").reverse().join("");
+  const commaInteger: string =
+    reversedInteger.match(/\d{1,3}/g)?.join(",") || "";
 
   let result = commaInteger.split("").reverse().join("");
   if (decimalPart !== "") {
@@ -18,13 +19,19 @@ export function addCommas(number: number): string {
   return result;
 }
 
-export const ParseEthUtil = (amount: any, decimal: any): number => {
-  let response: number = Number(amount) * 10 ** decimal;
+export const ParseEthUtil = (
+  amount: number | string,
+  decimal: number
+): number => {
+  const response: number = Number(amount) * 10 ** decimal;
   return response;
 };
 
-export const ParseWeiUtil = (amount: any, decimal: any): number => {
-  let response: number = Number(amount) / 10 ** decimal;
+export const ParseWeiUtil = (
+  amount: number | string,
+  decimal: number
+): number => {
+  const response: number = Number(amount) / 10 ** decimal;
   return response;
 };
 
@@ -48,7 +55,7 @@ export function numberToMask(input: number | string): string {
 }
 
 export function addTrailZeros(
-  input: any,
+  input: number | string,
   desiredFrontLength: number,
   desiredBackLength: number
 ): string {
@@ -63,7 +70,10 @@ export function addTrailZeros(
     secondHalf,
   ].join(".");
 }
-export function abbreviateNumber(value: any, abbreviateToFullString = false) {
+export function abbreviateNumber(
+  value: number,
+  abbreviateToFullString = false
+) {
   const suffixes = abbreviateToFullString
     ? ["", " Thousand", " Million", " Billion", " Trillion"]
     : ["", "K", "M", "B", "T"];

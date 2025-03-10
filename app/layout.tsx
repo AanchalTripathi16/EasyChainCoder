@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "./components/Header";
 import LoginProvider from "@/contexts/LoginContext";
 import SwapProvider from "@/contexts/Swapcontext";
 

@@ -3,6 +3,12 @@ import { useLoginContext } from "@/contexts/LoginContext";
 import { useSwapContext } from "@/contexts/Swapcontext";
 import React, { Dispatch, SetStateAction, useState } from "react";
 
+interface TokenItem {
+  name: string;
+  logo: string;
+  [key: string]: any;
+}
+
 const TokenModel = ({
   setIsOpen,
   title,
@@ -10,7 +16,7 @@ const TokenModel = ({
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   title: string;
 }) => {
-  const [tokenList, setTokenList] = useState<any[]>(TokenList);
+  const [tokenList, setTokenList] = useState<TokenItem[]>(TokenList);
   const {
     selectedLiquidity,
     setSelectedLiquidity,
@@ -38,6 +44,7 @@ const TokenModel = ({
       <div className="relative flex flex-row gap-2 w-full  ">
         {Networks.map((item) => (
           <button
+            key={item.name}
             disabled={
               (title == "To" && route != "bridge") ||
               (title == "To" &&
@@ -70,6 +77,7 @@ const TokenModel = ({
           <div className=" flex flex-col w-full h-auto space-y-2  ">
             {tokenList.map((item) => (
               <button
+                key={item.name}
                 className="flex flex-row space-x-2  text-white font-normal text-base hover:bg-[#39393A]/20  w-full min-h-[40px] rounded-md items-center px-3 justify-start border border-[#39393A]"
                 onClick={() => {
                   if (title != "To") {
@@ -80,7 +88,11 @@ const TokenModel = ({
                   setIsOpen(false);
                 }}
               >
-                <img src={item.logo} className="size-5" />
+                <img
+                  src={item.logo}
+                  className="size-5"
+                  alt={`${item.name} logo`}
+                />
                 <p> {item.name}</p>
               </button>
             ))}

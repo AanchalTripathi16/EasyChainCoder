@@ -2,6 +2,12 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import TokenModel from "./TokenModel";
 
+interface TokenData {
+  logo?: string;
+  name?: string;
+  [key: string]: any;
+}
+
 const SectionInput = ({
   title,
   selectedLiquidity,
@@ -11,11 +17,11 @@ const SectionInput = ({
   inputValue,
 }: {
   title: "To" | "From" | null;
-  selectedLiquidity: any;
+  selectedLiquidity: TokenData | null;
   placeholder: string;
   inputRef: string;
-  setInputValue: Dispatch<SetStateAction<Number>>;
-  inputValue: any;
+  setInputValue: Dispatch<SetStateAction<number>>;
+  inputValue: number | string;
 }) => {
   const [isModelOpen, setIsModelOpen] = useState<boolean>(false);
 
@@ -48,6 +54,7 @@ const SectionInput = ({
                   <img
                     src={selectedLiquidity.logo}
                     className="relative size-6 object-contain"
+                    alt={selectedLiquidity.name || "Token logo"}
                   />
                 )}
               </div>

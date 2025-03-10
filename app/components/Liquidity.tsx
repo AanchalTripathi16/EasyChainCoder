@@ -104,6 +104,7 @@ const Liquidity = () => {
                 .slice(length * (currentPageNo - 1), length * currentPageNo)
                 .map((item, index) => (
                   <div
+                    key={index}
                     id={index.toString()}
                     className="relative w-full max-h-[17rem] rounded-md bg-[#1A1D21] flex justify-between flex-col space-y-2 p-3 border border-"
                   >
@@ -113,22 +114,24 @@ const Liquidity = () => {
                           <img
                             src={
                               TokenList.filter(
-                                (token: any) =>
+                                (token) =>
                                   token.address == item.firstTokenAddress
                               )[0]?.logo
                             }
                             className="size-4"
+                            alt="First token logo"
                           />
                         </div>
                         <div className="bg-black rounded-full -translate-x-1 size-6 flex items-center justify-center">
                           <img
                             src={
                               TokenList.filter(
-                                (token: any) =>
+                                (token) =>
                                   token.address == item.secondTokenAddress
                               )[0]?.logo
                             }
                             className="size-4"
+                            alt="Second token logo"
                           />
                         </div>
                         <p className="ml-2 text-sm font-semibold text-[#CDCECF]">
