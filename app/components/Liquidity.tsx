@@ -8,6 +8,8 @@ import useEffectAsync from "../utils/useEffectAsync";
 import { Networks, TokenList } from "@/config";
 import { FiPlus } from "react-icons/fi";
 import { IoWalletOutline } from "react-icons/io5";
+import { useSwapContext } from "@/contexts/Swapcontext";
+import TransactionStatus from "./TransactionStatus";
 
 const Liquidity = () => {
   const {
@@ -28,6 +30,9 @@ const Liquidity = () => {
     poolList,
     setPoolList,
     resetValues,
+    getPoolReserves,
+    transactionStatus,
+    transactionMessage,
   } = useLoginContext();
 
   const [totalPages, setTotalPages] = useState(1);
@@ -56,11 +61,11 @@ const Liquidity = () => {
     }
   }, [selectedNetwork, networkData]);
 
-  useEffectAsync(async () => {
-    const response: any = await getPoolLists(currentPageNo, length);
-    setPoolList(response?.data?.pools);
-    setTotalPages(Math.ceil(response?.data?.pools?.length / length) || 1);
-  }, []);
+  // useEffectAsync(async () => {
+  //   const response: any = await getPoolLists(currentPageNo, length);
+  //   setPoolList(response?.data?.pools);
+  //   setTotalPages(Math.ceil(response?.data?.pools?.length / length) || 1);
+  // }, []);
 
   const {
     selectedLiquidity,
@@ -80,11 +85,87 @@ const Liquidity = () => {
     setSelectedNetwork,
   } = useLoginContext();
 
+  // Add poolReserves state
+  const [poolReserves, setPoolReserves] = useState<{
+    tokenA: string;
+    tokenB: string;
+    reserveA: string;
+    reserveB: string;
+  } | null>(null);
+
   useEffect(() => {
     if (fromAmount) {
       setToAmount((Number(fromAmount) * Number(Twoby1)).toFixed(4));
     }
   }, [Twoby1, fromAmount]);
+
+  // Update pool reserves when selected pool changes
+  useEffect(() => {
+    if (selectedPool) {
+      // Set pool reserves from poolList data
+      setPoolReserves({
+        tokenA: selectedPool.firstTokenAddress,
+        tokenB: selectedPool.secondTokenAddress,
+        reserveA: selectedPool.firstTokenBalance || "0",
+        reserveB: selectedPool.secondTokenBalance || "0",
+      });
+    } else {
+      setPoolReserves(null);
+    }
+  }, [selectedPool]);
+
+  // Format number with commas for display
+  const formatNumber = (num: string) => {
+    return parseFloat(num).toLocaleString("en-US", {
+      maximumFractionDigits: 6,
+    });
+  };
+
+  // Calculate the expected amount of the second token based on pool reserves
+  useEffect(() => {
+    if (
+      poolReserves &&
+      fromAmount &&
+      selectedLiquidity &&
+      selectedToLiquidity
+    ) {
+      // Find which token corresponds to which reserve
+      const isFirstToken =
+        poolReserves.tokenA.toLowerCase() ===
+          selectedLiquidity.address.toLowerCase() ||
+        poolReserves.tokenB.toLowerCase() ===
+          selectedLiquidity.address.toLowerCase();
+
+      if (isFirstToken && !isRemoveLiquidity) {
+        // For adding liquidity, calculate based on the ratio of reserves
+        const reserveA = parseFloat(
+          poolReserves.tokenA.toLowerCase() ===
+            selectedLiquidity.address.toLowerCase()
+            ? poolReserves.reserveA
+            : poolReserves.reserveB
+        );
+
+        const reserveB = parseFloat(
+          poolReserves.tokenB.toLowerCase() ===
+            selectedToLiquidity.address.toLowerCase()
+            ? poolReserves.reserveB
+            : poolReserves.reserveA
+        );
+
+        if (reserveA > 0 && reserveB > 0) {
+          const ratio = reserveB / reserveA;
+          const calculatedAmount = parseFloat(fromAmount) * ratio;
+          setToAmount(calculatedAmount.toFixed(6));
+        }
+      }
+    }
+  }, [
+    fromAmount,
+    poolReserves,
+    selectedLiquidity,
+    selectedToLiquidity,
+    isRemoveLiquidity,
+  ]);
 
   // Function to calculate user's share percentage
   const calculateUserShare = (pool: any) => {
@@ -119,6 +200,80 @@ const Liquidity = () => {
       setToAmount(Number(tempAmount));
     }
   };
+
+  const renderPoolReserves = () => {
+    if (!poolReserves || !selectedPool) return null;
+
+    return (
+      <div className="w-full px-4 py-3 bg-gray-800/50 rounded-lg border border-purple-500/20 my-4">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-sm text-gray-400">Pool Reserves</span>
+          <span className="text-xs text-purple-400">
+            {selectedPool.poolAddress &&
+              `${selectedPool.poolAddress.substring(
+                0,
+                6
+              )}...${selectedPool.poolAddress.substring(
+                selectedPool.poolAddress.length - 4
+              )}`}
+          </span>
+        </div>
+        <div className="flex justify-between items-center">
+          <div className="flex flex-col">
+            <span className="text-xs text-gray-400">
+              {selectedLiquidity?.symbol || "Token A"}
+            </span>
+            <span className="text-sm font-medium">
+              {poolReserves.tokenA.toLowerCase() ===
+              selectedLiquidity?.address?.toLowerCase()
+                ? formatNumber(poolReserves.reserveA)
+                : formatNumber(poolReserves.reserveB)}
+            </span>
+          </div>
+          <div className="flex flex-col items-end">
+            <span className="text-xs text-gray-400">
+              {selectedToLiquidity?.symbol || "Token B"}
+            </span>
+            <span className="text-sm font-medium">
+              {poolReserves.tokenB.toLowerCase() ===
+              selectedToLiquidity?.address?.toLowerCase()
+                ? formatNumber(poolReserves.reserveB)
+                : formatNumber(poolReserves.reserveA)}
+            </span>
+          </div>
+        </div>
+        {isAddLiquidity && (
+          <div className="mt-2 pt-2 border-t border-purple-500/20">
+            <div className="text-xs text-gray-400">
+              Current Ratio: 1 {selectedLiquidity?.symbol} ={" "}
+              {poolReserves && selectedLiquidity && selectedToLiquidity
+                ? parseFloat(
+                    poolReserves.tokenA.toLowerCase() ===
+                      selectedLiquidity.address.toLowerCase()
+                      ? (
+                          parseFloat(poolReserves.reserveB) /
+                          parseFloat(poolReserves.reserveA)
+                        ).toFixed(6)
+                      : (
+                          parseFloat(poolReserves.reserveA) /
+                          parseFloat(poolReserves.reserveB)
+                        ).toFixed(6)
+                  ).toLocaleString("en-US", { maximumFractionDigits: 6 })
+                : "0"}{" "}
+              {selectedToLiquidity?.symbol}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Call getPoolReserves when component mounts or when network changes
+  useEffect(() => {
+    if (networkData?.provider && address) {
+      getPoolReserves();
+    }
+  }, [networkData, address]);
 
   return (
     <div className="relative w-full h-full flex flex-col md:flex-row gap-4 p-4">
@@ -160,27 +315,27 @@ const Liquidity = () => {
             Create Pool
           </button>
         </div>
-        <div className="relative h-[660px] w-full flex-1 flex flex-col">
-          <div className="w-full h-[612px] px-6 py-4">
-            <div className="grid sm:grid-cols-2 grid-cols-1 gap-4 h-full overflow-y-auto">
+        <div className="relative h-[620px] w-full flex-1 flex flex-col">
+          <div className="w-full h-[566px] px-6 py-4">
+            <div className="grid sm:grid-cols-2 grid-cols-1 grid-rows-2 gap-4 h-full overflow-y-auto">
               {(activeTab === "all" ? poolList : poolListMyShare)?.length >
               0 ? (
                 (activeTab === "all" ? poolList : poolListMyShare)
                   .slice(length * (currentPageNo - 1), length * currentPageNo)
                   .map((item, index) => {
-                    const userSharePercent = calculateUserShare(item);
                     const firstToken = TokenList.find(
                       (token: any) => token.address === item.firstTokenAddress
                     );
                     const secondToken = TokenList.find(
                       (token: any) => token.address === item.secondTokenAddress
                     );
+                    const userSharePercent = calculateUserShare(item);
 
                     return (
                       <div
                         key={index}
                         id={index.toString()}
-                        className="w-full rounded-lg bg-[#242830] flex justify-between flex-col p-4 border border-[#39393A] hover:border-purple-500 transition-all shadow-md hover:shadow-purple-500/10"
+                        className="w-full h-a rounded-lg bg-[#242830] flex justify-between flex-col p-4 border border-[#39393A] hover:border-purple-500 transition-all shadow-md hover:shadow-purple-500/10"
                       >
                         <div className="w-full flex flex-row items-center justify-between mb-3">
                           <div className="flex flex-row items-center">
@@ -266,31 +421,39 @@ const Liquidity = () => {
                           <button
                             className="h-9 w-full rounded-md bg-[#1A1D21] text-white text-xs font-medium border border-[#39393A] hover:bg-[#39393A] transition-all flex items-center justify-center gap-1"
                             onClick={() => {
-                              setSelectedPool(item);
+                              // Find the most up-to-date pool data
+                              const updatedPool =
+                                poolList.find(
+                                  (p) => p.poolAddress === item.poolAddress
+                                ) || item;
+                              setSelectedPool(updatedPool);
                               setIsAddLiquidity(false);
                               setIsCreatePool(false);
                               setIsRemoveLiquidity(true);
                               setSelectedNetwork(
                                 Networks.filter(
-                                  (network) => network.code == item.chainId
+                                  (network) =>
+                                    network.code == updatedPool.chainId
                                 )[0]
                               );
                               setSelectedLiquidity(
                                 TokenList.filter(
                                   (token: any) =>
-                                    token.address == item.firstTokenAddress
+                                    token.address ==
+                                    updatedPool.firstTokenAddress
                                 )[0]
                               );
                               setSelectedToLiquidity(
                                 TokenList.filter(
                                   (token: any) =>
-                                    token.address == item.secondTokenAddress
+                                    token.address ==
+                                    updatedPool.secondTokenAddress
                                 )[0]
                               );
                               setTwoby1(
                                 Number(
-                                  item.secondTokenBalance /
-                                    item.firstTokenBalance
+                                  updatedPool.secondTokenBalance /
+                                    updatedPool.firstTokenBalance
                                 ).toFixed(4)
                               );
                             }}
@@ -301,31 +464,39 @@ const Liquidity = () => {
                           <button
                             className="h-9 w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all rounded-md text-white text-xs font-medium flex items-center justify-center gap-1"
                             onClick={() => {
-                              setSelectedPool(item);
+                              // Find the most up-to-date pool data
+                              const updatedPool =
+                                poolList.find(
+                                  (p) => p.poolAddress === item.poolAddress
+                                ) || item;
+                              setSelectedPool(updatedPool);
                               setIsAddLiquidity(true);
                               setIsCreatePool(false);
                               setIsRemoveLiquidity(false);
                               setSelectedNetwork(
                                 Networks.filter(
-                                  (network) => network.code == item.chainId
+                                  (network) =>
+                                    network.code == updatedPool.chainId
                                 )[0]
                               );
                               setSelectedLiquidity(
                                 TokenList.filter(
                                   (token: any) =>
-                                    token.address == item.firstTokenAddress
+                                    token.address ==
+                                    updatedPool.firstTokenAddress
                                 )[0]
                               );
                               setSelectedToLiquidity(
                                 TokenList.filter(
                                   (token: any) =>
-                                    token.address == item.secondTokenAddress
+                                    token.address ==
+                                    updatedPool.secondTokenAddress
                                 )[0]
                               );
                               setTwoby1(
                                 Number(
-                                  item.secondTokenBalance /
-                                    item.firstTokenBalance
+                                  updatedPool.secondTokenBalance /
+                                    updatedPool.firstTokenBalance
                                 ).toFixed(4)
                               );
                             }}
@@ -391,6 +562,14 @@ const Liquidity = () => {
         </div>
         <div className="flex-1 flex flex-col justify-between p-6">
           <div className="space-y-6">
+            {/* Transaction Status */}
+            {transactionStatus && (
+              <TransactionStatus
+                status={transactionStatus}
+                message={transactionMessage}
+              />
+            )}
+
             <SectionInput
               title="From"
               selectedLiquidity={selectedLiquidity}
@@ -399,6 +578,9 @@ const Liquidity = () => {
               setInputValue={setFromAmount}
               inputValue={fromAmount}
             />
+
+            {isAddLiquidity && renderPoolReserves()}
+            {isRemoveLiquidity && renderPoolReserves()}
 
             <div className="relative w-full flex justify-center">
               <button

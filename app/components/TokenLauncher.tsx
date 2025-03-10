@@ -7,6 +7,7 @@ import { tokenAbi, tokenBytecode } from "../utils/deployToken";
 import { addToken } from "@/services/userService";
 import { useLoginContext } from "@/contexts/LoginContext";
 import { Networks } from "@/config";
+import TransactionStatus, { TransactionStatusType } from "./TransactionStatus";
 // import { deployTokenContract } from "./deploy";
 
 const TokenLauncher = () => {
@@ -20,18 +21,27 @@ const TokenLauncher = () => {
     chainId: "sonic",
   });
 
-  const chainIdOptions = [
-    { id: "Sonic", value: "sonic" },
-    { id: "BASE", value: "base" },
-    { id: "ARB", value: "arb" },
-    { id: "BNB", value: "bnb" },
-    { id: "ETH", value: "eth" },
-  ];
+  const chainIdOptions = [{ id: "Sonic", value: "sonic" }];
 
   const [isDropdown, setIsDropdown] = useState(false);
 
   const [errors, setErrors] = useState<any>({});
+  const [txStatus, setTxStatus] = useState<TransactionStatusType>(null);
+  const [statusMessage, setStatusMessage] = useState<string>("");
   const { networkData, switchNetwork } = useLoginContext();
+
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      symbol: "",
+      visual: null,
+      visualBase64: null,
+      totalSupply: "",
+      decimals: "",
+      chainId: "sonic",
+    });
+    setErrors({});
+  };
 
   const validateForm = () => {
     const newErrors: any = {};
@@ -58,10 +68,6 @@ const TokenLauncher = () => {
 
     if (!formData.decimals) {
       newErrors.decimals = "Token decimals is required.";
-    }
-
-    if (!formData.chainId) {
-      newErrors.chainId = "Chain id is required.";
     }
 
     return newErrors;
@@ -155,18 +161,37 @@ const TokenLauncher = () => {
         console.error("Ethereum provider not found");
         return;
       }
+
+      setTxStatus("confirming");
+      setStatusMessage("Creating your token...");
+
       const provider = new ethers.BrowserProvider(window.ethereum);
-      const deploy = await deployTokenContract();
       try {
+        const deploy = await deployTokenContract();
+        setTxStatus("success");
+
         await addToken({
           name: formData.name,
           symbol: formData.symbol,
-          visual: base64ToBuffer(formData.visual!),
+          visual: base64ToBuffer(formData.visual!) || "/coins/sonic.svg",
           totalSupply: formData.totalSupply,
           decimals: formData.decimals,
-          chainId: formData.chainId,
+          chainId: "sonic", // Always use "sonic" as the chainId
         });
-      } catch (error) {}
+
+        setStatusMessage("Token created successfully!");
+        resetForm(); // Reset the form after successful token creation
+
+        // Clear the success message after 5 seconds
+        setTimeout(() => {
+          setTxStatus(null);
+          setStatusMessage("");
+        }, 5000);
+      } catch (error) {
+        console.error("Failed to add token:", error);
+        setTxStatus("failed");
+        setStatusMessage("Failed to create token. Please try again later.");
+      }
     } else {
       setErrors(newErrors);
     }
@@ -266,18 +291,15 @@ const TokenLauncher = () => {
             {/* Chain ID Field */}
             <div className="w-full flex flex-col md:flex-row md:justify-between md:items-center gap-2">
               <label htmlFor="chainId" className="text-pink-500">
-                Chain ID
+                Network
               </label>
               <div className="w-full md:w-auto">
-                <Dropdown
-                  options={chainIdOptions}
-                  isOpen={isDropdown}
-                  setIsOpen={setIsDropdown}
-                  value={formData.chainId}
-                  handleClick={(value: any) =>
-                    setFormData({ ...formData, chainId: value?.value })
-                  }
-                />
+                <div className="inline-flex justify-center rounded-md border border-purple-500/30 px-4 py-2 bg-zinc-800/70 text-sm font-medium text-white">
+                  <span className="flex items-center">
+                    <span className="mr-2 h-2 w-2 rounded-full bg-green-500"></span>
+                    Sonic Network
+                  </span>
+                </div>
               </div>
             </div>
             {errors.chainId && (
@@ -321,20 +343,22 @@ const TokenLauncher = () => {
             )}
           </div>
         </div>
-        <div className="w-full flex justify-center mt-2">
+        <div className="w-full flex flex-col items-center justify-center mt-2">
+          {txStatus && (
+            <TransactionStatus status={txStatus} message={statusMessage} />
+          )}
           {Networks.filter((item: any) => item.code == formData?.chainId)[0]
             .chainId != networkData?.chainId ? (
             <button
               className="text-white h-[50px] w-[220px] m-auto bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-lg shadow-md transition-all duration-300"
               onClick={() => {
                 switchNetwork(
-                  Networks.filter(
-                    (item: any) => item.code == formData?.chainId
-                  )[0].chainId
+                  Networks.filter((item: any) => item.code == "sonic")[0]
+                    .chainId
                 );
               }}
             >
-              Switch Network
+              Switch to Sonic Network
             </button>
           ) : (
             <button

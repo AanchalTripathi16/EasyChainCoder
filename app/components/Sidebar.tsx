@@ -154,11 +154,11 @@ const Sidebar = () => {
 
   const navLinks = [
     { name: "Home", dex: "home" },
+    { name: "SonicAgent", dex: "chat" },
     { name: "Swap", dex: "dex" },
     { name: "Bridge", dex: "bridge" },
     { name: "Token Launcher", dex: "token" },
     { name: "Liquidity", dex: "liquidity" },
-    { name: "Chat with Us", dex: "chat" },
   ];
 
   const handleNavClick = (dex: string) => {
@@ -279,10 +279,14 @@ const Sidebar = () => {
             {navLinks.map((item) => (
               <button
                 key={item.dex}
-                className={`w-full text-left px-4 py-3 rounded-md transition-colors ${
-                  selectedLink === item.dex || route === item.dex
+                className={`w-full text-left px-4 py-3 rounded-md ${
+                  (selectedLink === item.dex || route === item.dex) &&
+                  item.dex != "chat"
                     ? "bg-gray-800 text-white"
-                    : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                    : "text-gray-400 hover:bg-gray-800 hover:text-white "
+                } ${
+                  item.dex == "chat" &&
+                  "bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent"
                 }`}
                 onClick={() => handleNavClick(item.dex)}
               >

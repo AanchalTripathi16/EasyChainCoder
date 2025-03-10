@@ -5,7 +5,7 @@ import SwapProvider from "@/contexts/Swapcontext";
 
 export const metadata: Metadata = {
   title: "EasyChainCoders",
-  description: "One click soultion for SonicDEX",
+  description: "One click solution for SonicDEX",
   icons: {
     icon: "/favicon.png",
   },

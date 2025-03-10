@@ -15,6 +15,7 @@ import tokenAbi from "../consts/Abis/tokenAbi.json";
 import { chainMapping, chainNetworkParams, deployPoolByteCode } from "@/config";
 import { sleepTimer } from "@/app/utils/helper";
 import { addLedger, createPool } from "@/services/userService";
+import { TransactionStatusType } from "@/app/components/TransactionStatus";
 
 interface ILoginState {
   selectedLink: string | null;
@@ -61,6 +62,10 @@ interface ILoginState {
     amount: any,
     poolAddress: string
   ) => Promise<void>;
+  getPoolReserves: () => Promise<void>;
+  updatePoolReserves: (poolAddress: string) => Promise<void>;
+  transactionStatus: TransactionStatusType;
+  transactionMessage: string;
 }
 
 let ethereum: any = null;
@@ -89,11 +94,25 @@ export default function LoginProvider({ children }: { children: ReactNode }) {
   const [fromAmount, setFromAmount] = useState<any>(null);
   const [toAmount, setToAmount] = useState<any>(null);
   const [Twoby1, setTwoby1] = useState<number>(0);
-  const [poolList, setPoolList] = useState<any[]>([]);
+  const [poolList, setPoolList] = useState<any[]>([
+    {
+      poolAddress: "0xF7E1DFE7292aF3498391ebD99fa3d9a29cE83441",
+      firstTokenAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+      secondTokenAddress: "0x6047828dc181963ba44974801FF68e538dA5eaF9",
+    },
+    {
+      poolAddress: "0x017bA7865ecc3e0d9F228BB6959bef959CeC20DA",
+      firstTokenAddress: "0x039e2fB66102314Ce7b64Ce5Ce3E5183bc94aD38",
+      secondTokenAddress: "0xbE121263691552E8a981a13FBeaB4FAf84FA6cdD",
+    },
+  ]);
   const [isCreatePool, setIsCreatePool] = useState<boolean>(true);
   const [isAddLiquidity, setIsAddLiquidity] = useState<boolean>(false);
   const [isRemoveLiquidity, setIsRemoveLiquidity] = useState<boolean>(false);
   const [route, setRoute] = useState<string | null>(null);
+  const [transactionStatus, setTransactionStatus] =
+    useState<TransactionStatusType>(null);
+  const [transactionMessage, setTransactionMessage] = useState<string>("");
 
   function validateButtonText() {
     if (!selectedLiquidity || !selectedToLiquidity) {
@@ -220,6 +239,13 @@ export default function LoginProvider({ children }: { children: ReactNode }) {
     loadWallet();
   }, [address]);
 
+  // Call getPoolReserves when user logs in or network changes
+  useEffect(() => {
+    if (networkData?.provider && address) {
+      getPoolReserves();
+    }
+  }, [networkData, address]);
+
   const switchNetwork = async (chainId: number) => {
     if (!chainId) return;
     try {
@@ -252,6 +278,9 @@ export default function LoginProvider({ children }: { children: ReactNode }) {
   };
   const addLiquidity = async (poolAddress: string) => {
     try {
+      setTransactionStatus("confirming");
+      setTransactionMessage("Adding liquidity...");
+
       const web3Provider = networkData?.provider as ethers.BrowserProvider;
       const signer = await web3Provider.getSigner(address!);
       let bridgeData = null;
@@ -266,6 +295,13 @@ export default function LoginProvider({ children }: { children: ReactNode }) {
         BigInt(toAmount * 10 ** 18),
       ];
       bridgeData = await liquidityContract.provideLiquidity(...lockArgs);
+
+      // Wait for transaction to be mined
+      await bridgeData.wait();
+
+      // Update pool reserves
+      await updatePoolReserves(poolAddress);
+
       await addLedger({
         walletAddress: address!,
         poolAddress: poolAddress,
@@ -274,12 +310,20 @@ export default function LoginProvider({ children }: { children: ReactNode }) {
         chainId: chainMapping[selectedNetwork?.name],
         swap: undefined,
       });
+
+      setTransactionStatus("success");
+      setTransactionMessage("Liquidity added successfully!");
     } catch (err) {
       console.log(err);
+      setTransactionStatus("failed");
+      setTransactionMessage("Failed to add liquidity");
     }
   };
   const removeLiquidity = async (poolAddress: string) => {
     try {
+      setTransactionStatus("confirming");
+      setTransactionMessage("Removing liquidity...");
+
       const web3Provider = networkData?.provider as ethers.BrowserProvider;
       const signer = await web3Provider.getSigner(address!);
       let bridgeData = null;
@@ -291,6 +335,13 @@ export default function LoginProvider({ children }: { children: ReactNode }) {
       );
       const lockArgs = [fromAmount.toString()];
       bridgeData = await liquidityContract.removeLiquidity(...lockArgs);
+
+      // Wait for transaction to be mined
+      await bridgeData.wait();
+
+      // Update pool reserves
+      await updatePoolReserves(poolAddress);
+
       await addLedger({
         walletAddress: address!,
         poolAddress: poolAddress,
@@ -299,8 +350,13 @@ export default function LoginProvider({ children }: { children: ReactNode }) {
         chainId: chainMapping[selectedNetwork?.name],
         swap: undefined,
       });
+
+      setTransactionStatus("success");
+      setTransactionMessage("Liquidity removed successfully!");
     } catch (err) {
       console.log(err);
+      setTransactionStatus("failed");
+      setTransactionMessage("Failed to remove liquidity");
     }
   };
   const approveLiquidity = async (
@@ -396,6 +452,95 @@ export default function LoginProvider({ children }: { children: ReactNode }) {
     } catch (error) {}
   };
 
+  // Function to fetch reserves for all pools
+  const getPoolReserves = async () => {
+    try {
+      // Use the existing static pool list
+      const updatedPoolList = [...poolList];
+
+      // For each pool, call the getReserves function
+      for (let i = 0; i < updatedPoolList.length; i++) {
+        const pool = updatedPoolList[i];
+
+        if (pool.poolAddress && networkData?.provider) {
+          try {
+            // Create contract instance
+            const poolContract = new ethers.Contract(
+              pool.poolAddress,
+              poolUtilityAbi,
+              networkData.provider
+            );
+
+            // Call getReserves function
+            const [tokenA, tokenB, reserveA, reserveB] =
+              await poolContract.getReserves();
+
+            // Update pool with reserve data
+            updatedPoolList[i] = {
+              ...pool,
+              firstTokenBalance: ethers.formatUnits(reserveA.toString(), 18),
+              secondTokenBalance: ethers.formatUnits(reserveB.toString(), 18),
+            };
+          } catch (error) {
+            console.error(
+              `Error fetching reserves for pool ${pool.poolAddress}:`,
+              error
+            );
+          }
+        }
+      }
+
+      // Update the pool list state with the new data
+      setPoolList(updatedPoolList);
+    } catch (error) {
+      console.error("Error fetching pool reserves:", error);
+    }
+  };
+
+  const updatePoolReserves = async (poolAddress: string) => {
+    try {
+      const web3Provider = networkData?.provider as ethers.BrowserProvider;
+      const signer = await web3Provider.getSigner(address!);
+
+      const poolContract = new ethers.Contract(
+        poolAddress,
+        poolUtilityAbi,
+        signer
+      );
+
+      // Get the token addresses from the pool
+      const token0 = await poolContract.token0();
+      const token1 = await poolContract.token1();
+
+      // Get the reserves
+      const reserves = await poolContract.getReserves();
+      const reserve0 = ethers.formatUnits(reserves[0], 18);
+      const reserve1 = ethers.formatUnits(reserves[1], 18);
+
+      // Update the pool in the poolList
+      setPoolList((prevPoolList) =>
+        prevPoolList.map((pool) => {
+          if (pool.poolAddress === poolAddress) {
+            return {
+              ...pool,
+              firstTokenBalance:
+                pool.firstTokenAddress.toLowerCase() === token0.toLowerCase()
+                  ? reserve0
+                  : reserve1,
+              secondTokenBalance:
+                pool.secondTokenAddress.toLowerCase() === token1.toLowerCase()
+                  ? reserve1
+                  : reserve0,
+            };
+          }
+          return pool;
+        })
+      );
+    } catch (error) {
+      console.error("Error updating pool reserves:", error);
+    }
+  };
+
   return (
     <LoginContext.Provider
       value={{
@@ -439,6 +584,10 @@ export default function LoginProvider({ children }: { children: ReactNode }) {
         setRoute,
         CreatePool,
         approveLiquidity,
+        getPoolReserves,
+        updatePoolReserves,
+        transactionStatus,
+        transactionMessage,
       }}
     >
       {children}
