@@ -19,6 +19,21 @@ const config: Config = {
       },
       animation: {
         "spin-slow": "spin 20s linear infinite",
+        "gradient-slow": "gradient 15s ease infinite",
+        "pulse-slow": "pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+      },
+      keyframes: {
+        gradient: {
+          "0%, 100%": {
+            "background-position": "0% 50%",
+          },
+          "50%": {
+            "background-position": "100% 50%",
+          },
+        },
+      },
+      backgroundSize: {
+        "gradient-size": "200% 200%",
       },
     },
   },

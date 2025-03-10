@@ -5,6 +5,7 @@ import TokenModel from "./TokenModel";
 interface TokenData {
   logo?: string;
   name?: string;
+  symbol?: string;
   [key: string]: any;
 }
 
@@ -28,43 +29,61 @@ const SectionInput = ({
   return (
     <>
       {isModelOpen && <TokenModel setIsOpen={setIsModelOpen} title={title!} />}
-      <div className="relative w-full  flex flex-col space-y-2">
-        <div className="relative flex flex-row w-full h-[70px] border-[1px] border-[#CDCECF] rounded-md p-4">
+      <div className="relative w-full flex flex-col space-y-2">
+        <div className="flex justify-between items-center mb-1">
+          <p className="text-sm font-medium text-gray-300">{title}</p>
+          {inputValue && Number(inputValue) > 0 && (
+            <button
+              className="text-xs text-pink-400 hover:text-pink-300 font-medium"
+              onClick={() => setInputValue(0)}
+            >
+              Clear
+            </button>
+          )}
+        </div>
+        <div className="relative flex flex-row w-full h-[70px] bg-[#242830] border border-[#39393A] hover:border-pink-500 focus-within:border-pink-500 rounded-lg p-4 transition-all">
           <div className="relative w-[50%] h-full flex items-center justify-center">
             <input
               key={inputRef}
-              value={inputValue || 0}
-              className="bg-transparent text-white w-full text-xsm !outline-none placeholder:text-[#626262] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              value={inputValue || ""}
+              className="bg-transparent text-white w-full text-lg font-medium !outline-none placeholder:text-gray-500 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               placeholder={placeholder}
               type="number"
               onChange={(e) => setInputValue(Number(e.target?.value))}
             />
           </div>
-          <div className="flex flex-col h-full overflow-y-visible  space-y-1 relative w-[50%] ">
+          <div className="flex flex-col h-full overflow-y-visible space-y-1 relative w-[50%]">
             <button
-              className="h-full  border-[1px] border-[#CDCECF] rounded-md p-2 flex flex-row space-x-2 items-center justify-start hover:bg-white/20"
+              className="h-full border border-[#39393A] bg-[#1A1D21] hover:bg-[#2A2D31] rounded-lg p-2 flex flex-row items-center justify-between transition-all"
               onClick={() => setIsModelOpen(!isModelOpen)}
             >
-              <div
-                className={`rounded-full size-6 flex items-center justify-center ${
-                  !selectedLiquidity && "bg-prime-border-200"
-                }`}
-              >
-                {selectedLiquidity && (
-                  <img
-                    src={selectedLiquidity.logo}
-                    className="relative size-6 object-contain"
-                    alt={selectedLiquidity.name || "Token logo"}
-                  />
-                )}
+              <div className="flex items-center">
+                <div
+                  className={`rounded-full size-8 flex items-center justify-center ${
+                    !selectedLiquidity ? "bg-gray-700" : ""
+                  }`}
+                >
+                  {selectedLiquidity && (
+                    <img
+                      src={selectedLiquidity.logo}
+                      className="relative size-6 object-contain"
+                      alt={selectedLiquidity.name || "Token logo"}
+                    />
+                  )}
+                </div>
+                <p className="relative text-sm font-medium text-white ml-2 text-nowrap text-ellipsis overflow-x-hidden max-w-[80%]">
+                  {!selectedLiquidity
+                    ? "Select Token"
+                    : selectedLiquidity.symbol || selectedLiquidity.name}
+                </p>
               </div>
-              <p className="relative text-sm text-prime-token-200 font-semibold text-nowrap text-ellipsis  overflow-x-hidden max-w-[80%]">
-                {!selectedLiquidity ? "Select Token" : selectedLiquidity.name}
-              </p>
-              <RiArrowDropDownLine className="text-prime-token-200 size-4" />
+              <RiArrowDropDownLine className="text-gray-400 size-6" />
             </button>
           </div>
         </div>
+        {selectedLiquidity && (
+          <p className="text-xs text-gray-400">{selectedLiquidity.name}</p>
+        )}
       </div>
     </>
   );

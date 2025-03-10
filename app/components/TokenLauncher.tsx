@@ -173,151 +173,180 @@ const TokenLauncher = () => {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="border border-zinc-500 bg-zinc-900 rounded p-6 flex flex-col items-start justify-center gap-10"
-    >
-      <h2 className="m-auto border-b border-zinc-600 w-full text-center pb-6 text-2xl font-semibold">
-        Token Creator
-      </h2>
-      <div className="flex flex-row items-center justify-between gap-6">
-        <div className="w-full flex flex-col gap-4 items-stretch justify-stretch">
-          {/* Name Field */}
-          <div className="w-full flex justify-between items-center">
-            <label htmlFor="name">Token Name</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              placeholder="eg, TESTZR12"
-              className="h-[40px] rounded-md text-white placeholder:text-zinc-400 bg-zinc-800 border border-zinc-900 px-2"
-              value={formData.name}
-              onChange={handleChange}
-            />
-          </div>
-          {errors.name && <span className="text-red-500">{errors.name}</span>}
-
-          {/* Symbol Field */}
-          <div className="w-full flex justify-between items-center">
-            <label htmlFor="symbol">Token Symbol</label>
-            <input
-              type="text"
-              id="symbol"
-              name="symbol"
-              placeholder="eg. TRZ12"
-              className="h-[40px] rounded-md text-white placeholder:text-zinc-400 bg-zinc-800 border border-zinc-900 px-2"
-              value={formData.symbol}
-              onChange={handleChange}
-            />
-          </div>
-          {errors.symbol && (
-            <span className="text-red-500">{errors.symbol}</span>
-          )}
-
-          {/* Total Supply Field */}
-          <div className="w-full flex justify-between items-center">
-            <label htmlFor="totalSupply">Total Supply</label>
-            <input
-              type="number"
-              id="totalSupply"
-              name="totalSupply"
-              className="h-[40px] rounded-md text-white placeholder:text-zinc-400 bg-zinc-800 border border-zinc-900 px-2"
-              value={formData.totalSupply}
-              onChange={handleChange}
-            />
-          </div>
-          {errors.totalSupply && (
-            <span className="text-red-500">{errors.totalSupply}</span>
-          )}
-
-          {/* Decimals Field */}
-          <div className="w-full flex justify-between items-center">
-            <label htmlFor="decimals">Decimals</label>
-            <input
-              type="number"
-              id="decimals"
-              name="decimals"
-              className="h-[40px] rounded-md text-white placeholder:text-zinc-400 bg-zinc-800 border border-zinc-900 px-2"
-              value={formData.decimals}
-              onChange={handleChange}
-            />
-          </div>
-          {errors.decimals && (
-            <span className="text-red-500">{errors.decimals}</span>
-          )}
-
-          {/* Chain ID Field */}
-          <div className="w-full flex justify-between items-center">
-            <label htmlFor="chainId">Chain ID</label>
-            <Dropdown
-              options={chainIdOptions}
-              isOpen={isDropdown}
-              setIsOpen={setIsDropdown}
-              value={formData.chainId}
-              handleClick={(value: any) =>
-                setFormData({ ...formData, chainId: value?.value })
-              }
-            />
-          </div>
-          {errors.chainId && (
-            <span className="text-red-500">{errors.chainId}</span>
-          )}
-        </div>
-
-        {/* Visual (Image) Field */}
-        <div className="w-full flex flex-col justify-center items-center h-full gap-3">
-          <label htmlFor="visual">Token Image</label>
-          {formData.visualBase64 ? (
-            <div>
-              <img
-                src={formData.visualBase64}
-                alt="Token Preview"
-                className="size-[300px] object-contain mt-3"
+    <div className="relative w-full h-full flex flex-col justify-center items-center p-6 overflow-hidden">
+      {/* Background with animated gradient */}
+      {/* <div className="absolute inset-0 bg-gradient-to-bl from-[#1a1a1a] via-[#297373]/10 to-[#1a1a1a] z-0"></div> */}
+      {/* Hexagon pattern background */}
+      {/* <div className="absolute inset-0 bg-[url('/assets/hexagon-pattern.svg')] bg-repeat opacity-5 z-0"></div> */}
+      <form
+        onSubmit={handleSubmit}
+        className="relative z-10 max-w-4xl w-full border border-purple-500/30 bg-[#1a1a1a]/80 backdrop-blur-md rounded-xl p-8 flex flex-col items-start justify-center gap-8 shadow-lg shadow-pink-500/10"
+      >
+        <h2 className="m-auto border-b border-purple-500/20 w-full text-center pb-6 text-2xl font-semibold">
+          <span className="bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
+            Token Creator
+          </span>
+        </h2>
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8 w-full">
+          <div className="w-full flex flex-col gap-4 items-stretch justify-stretch">
+            {/* Name Field */}
+            <div className="w-full flex flex-col md:flex-row md:justify-between md:items-center gap-2">
+              <label htmlFor="name" className="text-pink-500">
+                Token Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder="eg, TESTZR12"
+                className="h-[40px] rounded-md text-white placeholder:text-zinc-400 bg-zinc-800/70 border border-purple-500/30 px-3 focus:border-pink-500 focus:outline-none transition-colors"
+                value={formData.name}
+                onChange={handleChange}
               />
             </div>
+            {errors.name && (
+              <span className="text-red-500 text-sm">{errors.name}</span>
+            )}
+
+            {/* Symbol Field */}
+            <div className="w-full flex flex-col md:flex-row md:justify-between md:items-center gap-2">
+              <label htmlFor="symbol" className="text-pink-500">
+                Token Symbol
+              </label>
+              <input
+                type="text"
+                id="symbol"
+                name="symbol"
+                placeholder="eg. TRZ12"
+                className="h-[40px] rounded-md text-white placeholder:text-zinc-400 bg-zinc-800/70 border border-purple-500/30 px-3 focus:border-pink-500 focus:outline-none transition-colors"
+                value={formData.symbol}
+                onChange={handleChange}
+              />
+            </div>
+            {errors.symbol && (
+              <span className="text-red-500 text-sm">{errors.symbol}</span>
+            )}
+
+            {/* Total Supply Field */}
+            <div className="w-full flex flex-col md:flex-row md:justify-between md:items-center gap-2">
+              <label htmlFor="totalSupply" className="text-pink-500">
+                Total Supply
+              </label>
+              <input
+                type="number"
+                id="totalSupply"
+                name="totalSupply"
+                className="h-[40px] rounded-md text-white placeholder:text-zinc-400 bg-zinc-800/70 border border-purple-500/30 px-3 focus:border-pink-500 focus:outline-none transition-colors"
+                value={formData.totalSupply}
+                onChange={handleChange}
+              />
+            </div>
+            {errors.totalSupply && (
+              <span className="text-red-500 text-sm">{errors.totalSupply}</span>
+            )}
+
+            {/* Decimals Field */}
+            <div className="w-full flex flex-col md:flex-row md:justify-between md:items-center gap-2">
+              <label htmlFor="decimals" className="text-pink-500">
+                Decimals
+              </label>
+              <input
+                type="number"
+                id="decimals"
+                name="decimals"
+                className="h-[40px] rounded-md text-white placeholder:text-zinc-400 bg-zinc-800/70 border border-purple-500/30 px-3 focus:border-pink-500 focus:outline-none transition-colors"
+                value={formData.decimals}
+                onChange={handleChange}
+              />
+            </div>
+            {errors.decimals && (
+              <span className="text-red-500 text-sm">{errors.decimals}</span>
+            )}
+
+            {/* Chain ID Field */}
+            <div className="w-full flex flex-col md:flex-row md:justify-between md:items-center gap-2">
+              <label htmlFor="chainId" className="text-pink-500">
+                Chain ID
+              </label>
+              <div className="w-full md:w-auto">
+                <Dropdown
+                  options={chainIdOptions}
+                  isOpen={isDropdown}
+                  setIsOpen={setIsDropdown}
+                  value={formData.chainId}
+                  handleClick={(value: any) =>
+                    setFormData({ ...formData, chainId: value?.value })
+                  }
+                />
+              </div>
+            </div>
+            {errors.chainId && (
+              <span className="text-red-500 text-sm">{errors.chainId}</span>
+            )}
+          </div>
+
+          {/* Visual (Image) Field */}
+          <div className="w-full flex flex-col justify-center items-center h-full gap-3">
+            <label htmlFor="visual" className="text-pink-500 text-center">
+              Token Image
+            </label>
+            <div className="border-2 border-dashed border-purple-500/40 rounded-lg p-2 hover:border-pink-500 transition-colors">
+              {formData.visualBase64 ? (
+                <div>
+                  <img
+                    src={formData.visualBase64}
+                    alt="Token Preview"
+                    className="size-[200px] object-contain mt-3 rounded-lg"
+                  />
+                </div>
+              ) : (
+                <div>
+                  <img
+                    src="http://loremflickr.com/500/500"
+                    alt="Token Preview"
+                    className="size-[200px] filter grayscale brightness-50 rounded-lg"
+                  />
+                </div>
+              )}
+            </div>
+            <input
+              type="file"
+              id="visual"
+              name="visual"
+              className="px-4 w-full flex flex-col items-center justify-center text-sm text-pink-500"
+              onChange={handleChange}
+            />
+            {errors.visual && (
+              <span className="text-red-500 text-sm">{errors.visual}</span>
+            )}
+          </div>
+        </div>
+        <div className="w-full flex justify-center mt-2">
+          {Networks.filter((item: any) => item.code == formData?.chainId)[0]
+            .chainId != networkData?.chainId ? (
+            <button
+              className="text-white h-[50px] w-[220px] m-auto bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-lg shadow-md transition-all duration-300"
+              onClick={() => {
+                switchNetwork(
+                  Networks.filter(
+                    (item: any) => item.code == formData?.chainId
+                  )[0].chainId
+                );
+              }}
+            >
+              Switch Network
+            </button>
           ) : (
-            <div>
-              <img
-                src="http://loremflickr.com/500/500"
-                alt="Token Preview"
-                className="size-[300px] filter grayscale brightness-50"
-              />
-            </div>
-          )}
-          <input
-            type="file"
-            id="visual"
-            name="visual"
-            className="px-4 w-full flex flex-col items-center justify-center"
-            onChange={handleChange}
-          />
-          {errors.visual && (
-            <span className="text-red-500">{errors.visual}</span>
+            <button
+              className="text-white h-[50px] w-[220px] m-auto bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-lg shadow-md transition-all duration-300"
+              type="submit"
+            >
+              Create Token
+            </button>
           )}
         </div>
-      </div>
-      {Networks.filter((item: any) => item.code == formData?.chainId)[0]
-        .chainId != networkData?.chainId ? (
-        <button
-          className="text-white h-[40px] w-[220px] m-auto bg-blue-800 rounded-md"
-          onClick={() => {
-            switchNetwork(
-              Networks.filter((item: any) => item.code == formData?.chainId)[0]
-                .chainId
-            );
-          }}
-        >
-          Switch Network
-        </button>
-      ) : (
-        <button
-          className="text-white h-[40px] w-[220px] m-auto bg-blue-800 rounded-md"
-          type="submit"
-        >
-          Submit
-        </button>
-      )}
-    </form>
+      </form>
+    </div>
   );
 };
 

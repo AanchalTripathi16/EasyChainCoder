@@ -1,35 +1,27 @@
 "use client";
 
 import { useLoginContext } from "@/contexts/LoginContext";
-import React, { useState } from "react";
+import React from "react";
 
 export default function Header() {
-  const { selectedLink, setSelectedLink, setRoute } = useLoginContext();
-  const navLinks = [
-    { name: "Home", dex: "home" },
-    { name: "About Us", dex: "about" },
-    { name: "Chat with Us", dex: "chat" },
-  ];
+  const { address } = useLoginContext();
+
   return (
-    <div className="flex justify-between items-center w-full h-[7vh]  px-8">
-      <div className="text-gray-300 text-2xl font-semibold">NEO DEX</div>
-      <div className="flex flex-row space-x-8 text-gray-500 text-base font normal">
-        {navLinks.map((item) => (
-          <button
-            key={item.dex}
-            disabled={item.dex == "about"}
-            className={`hover:scale-110 ${
-              selectedLink == item.dex && "text-white"
-            }`}
-            onClick={() => {
-              setSelectedLink(item.dex);
-              setRoute(null);
-            }}
-          >
-            {item.name}
-          </button>
-        ))}
-      </div>
+    <div className="flex justify-between items-center w-full h-[3.8rem] px-6 bg-gray-900 py-2  border-b border-gray-800">
+      {/* <div className="text-gray-300 text-xl font-semibold">NEO DEX</div> */}
+
+      {address && (
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+            <span className="text-xs text-white">
+              {address.substring(0, 2)}
+            </span>
+          </div>
+          <div className="text-gray-400 text-sm">
+            {address.substring(0, 6)}...{address.substring(address.length - 4)}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

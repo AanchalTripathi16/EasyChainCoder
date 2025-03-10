@@ -1,12 +1,14 @@
 "use client";
 
 import React from "react";
-import Dashboard from "./components/Dashboard";
+import Sidebar from "./components/Sidebar";
+import MainContent from "./components/MainContent";
 
 export default function Home() {
   return (
-    <div className="relative w-full h-full flex flex-col  xl:text-lg">
-      <Dashboard />
+    <div className="flex h-full w-full overflow-hidden relative">
+      <Sidebar />
+      <MainContent />
     </div>
   );
 }

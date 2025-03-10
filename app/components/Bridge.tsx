@@ -65,13 +65,15 @@ const Bridge = () => {
     }
   };
   return (
-    <div className="relative w-full h-[80%] flex flex-row  justify-center items-center space-x-2 p-4 ">
-      {/* DEX */}
-      <div className="relative flex flex-col w-[30%] h-full bg-[#297373]/20 text-white border border-[#39393A] rounded-md">
-        <div className="relative flex  w-full h-[10%] items-center justify-center text-center text-white text-xl font-semibold border-b-2 border-[#39393A]">
-          Bridge
+    <div className="relative w-full h-[80%] flex flex-col justify-center items-center p-4">
+      {/* Bridge Component */}
+      <div className="relative z-10 flex flex-col w-[90%] max-w-md h-auto bg-[#1a1a1a]/80 backdrop-blur-md text-white border border-purple-500/30 rounded-xl shadow-lg shadow-pink-500/10">
+        <div className="relative flex w-full h-[60px] items-center justify-center text-center text-white text-xl font-semibold border-b border-purple-500/20">
+          <span className="bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
+            Cross-Chain Bridge
+          </span>
         </div>
-        <div className="relative flex w-full h-[90%] flex-col items-center justify-start space-y-8 px-6 py-10">
+        <div className="relative flex w-full flex-col items-center justify-start space-y-8 px-6 py-10">
           <SectionInput
             title="From"
             selectedLiquidity={selectedLiquidity}
@@ -80,6 +82,30 @@ const Bridge = () => {
             setInputValue={setFromAmount}
             inputValue={fromAmount}
           />
+
+          {/* Chain connection indicator */}
+          <div className="flex justify-center items-center w-full">
+            <div className="relative flex items-center justify-center">
+              <div className="h-[2px] w-20 bg-gradient-to-r from-purple-500 to-pink-500"></div>
+              <div className="absolute p-2 rounded-full bg-[#1a1a1a] border border-purple-500/30">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-pink-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+
           <SectionInput
             title="To"
             selectedLiquidity={selectedToLiquidity}
@@ -91,7 +117,7 @@ const Bridge = () => {
 
           <button
             disabled={isDisabled}
-            className="text-white text-base font-nomal bg-[#297373] disabled:bg-[#39393A]/60 text-center rounded-md w-full h-[40px]"
+            className="text-white text-base font-medium bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:from-gray-600/60 disabled:to-gray-600/60 text-center rounded-lg w-full h-[50px] transition-all duration-300 shadow-md"
             onClick={lockCall}
           >
             {buttonText}
