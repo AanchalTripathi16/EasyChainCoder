@@ -84,7 +84,9 @@ const Dashboard = () => {
             </div>
           </div> */}
           <div className="relative bg-gradient-to-r from-purple-400 to-pink-600 flex flex-col space-y-20 w-full h-full  justify-start items-center  px-8 pt-40  ">
-            <div className="text-gray-300 text-5xl font-semibold">NEO DEX</div>
+            <div className="text-gray-300 text-5xl font-semibold">
+              Sonic DEX
+            </div>
 
             {!loading ? (
               <button

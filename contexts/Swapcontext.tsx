@@ -78,7 +78,7 @@ export default function SwapProvider({ children }: { children: ReactNode }) {
   const swapContracts: { [key: string]: string } = {
     Arbitrum: "0xf40FC41d326Af8D45E58C36B1c79b29106CfDBCa",
     BNB: "",
-    Neo: "",
+    Sonic: "",
     Base: "",
   };
 

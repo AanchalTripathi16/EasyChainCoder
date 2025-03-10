@@ -28,18 +28,18 @@ export const Networks = [
       "https://bnb-testnet.g.alchemy.com/v2/XE-fniPpIqe120z7FJ1mYLMQodkasCzy",
   },
   {
-    name: "Neo",
-    chainId: 12227332,
-    hex: "0xba9304",
-    code: "neo",
+    name: "Sonic",
+    chainId: 146,
+    hex: "0x92",
+    code: "sonic",
     logo: "",
-    rpcURl: "https://neoxt4seed1.ngd.network",
+    rpcURl: "https://rpc.soniclabs.com",
   },
 ];
 
 export const chainMapping: { [key: string]: string } = {
   Arbitrum: "arb",
-  Neo: "neo",
+  Sonic: "sonic",
   Base: "base",
   BNB: "bsc",
 };
@@ -77,16 +77,16 @@ export const chainNetworkParams: { [key: number]: any } = {
     rpcUrls: ["https://bsc-dataseed.binance.org/"],
     blockExplorerUrls: ["https://testnet.bscscan.com"],
   },
-  12227332: {
-    chainId: "0xba9304", // 42161 in hexadecimal
-    chainName: "Neo X Testnet T4",
+  146: {
+    chainId: "0x92", // Sonic Mainnet chainId in hexadecimal
+    chainName: "Sonic Mainnet",
     nativeCurrency: {
-      name: "GAS",
-      symbol: "GAS",
+      name: "Sonic",
+      symbol: "S",
       decimals: 18,
     },
-    rpcUrls: ["https://testnet.rpc.banelabs.org"],
-    blockExplorerUrls: ["https://arbiscan.io"],
+    rpcUrls: ["https://rpc.soniclabs.com"],
+    blockExplorerUrls: ["https://sonicscan.org"],
   },
 };
 

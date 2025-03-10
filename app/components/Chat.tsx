@@ -30,7 +30,7 @@ const ChatAI = () => {
   const apiUrl = "http://139.59.3.8:8001/ai/ask"; // API URL
 
   const chainAbbre = {
-    neo: "neo",
+    sonic: "sonic",
     sepolia: "sepolia",
     "BNB Smart Chain": "bsc",
     "Base Sepolia": "bssepolia",

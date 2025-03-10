@@ -37,7 +37,7 @@ const Bridge = () => {
   const bridgechainMAp: any = {
     bnb: "0x27E11cd7831963101452dbd0f41c1D011F2Fa122",
     arb: "0x0A063b3AD7044a122c4C0b31A5BcB07e9D8498be",
-    neo: "0xE844478Acb6b7714ac1ffb08aFC3E9D13a1E8fB7",
+    sonic: "0xE844478Acb6b7714ac1ffb08aFC3E9D13a1E8fB7",
     base: "0x27E11cd7831963101452dbd0f41c1D011F2Fa122",
     eth: "0x41E65e9E6b200eb6cf9af08Fe0A876e2B32E5249",
   };

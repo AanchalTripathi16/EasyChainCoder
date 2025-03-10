@@ -17,11 +17,11 @@ const TokenLauncher = () => {
     visualBase64: null,
     totalSupply: "",
     decimals: "",
-    chainId: "neo",
+    chainId: "sonic",
   });
 
   const chainIdOptions = [
-    { id: "NEO", value: "neo" },
+    { id: "Sonic", value: "sonic" },
     { id: "BASE", value: "base" },
     { id: "ARB", value: "arb" },
     { id: "BNB", value: "bnb" },

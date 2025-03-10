@@ -2,19 +2,19 @@ import React from "react";
 
 export default function BlockchainMarquee() {
   const blockchains = [
-    "NEOx",
+    "Sonic",
     "Strealer",
     "Arbitrum",
     "Base",
-    "NEOx",
+    "Sonic",
     "Stellar",
     "Arbitrum",
     "Base",
-    "NEOX",
+    "Sonic",
     "Stellar",
     "Arbitrum",
     "Base",
-    "NEOx",
+    "Sonic",
     "Strealler",
     "Arbitrum",
     "Base",
