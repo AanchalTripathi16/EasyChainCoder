@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import { ethers } from "ethers";
-import poolAbi from "../consts/Abis/deploycontract.json";
+import poolAbi from "../consts/Abis/deployContract.json";
 import poolUtilityAbi from "../consts/Abis/poolAbi.json";
 import tokenAbi from "../consts/Abis/tokenAbi.json";
 import { chainMapping, chainNetworkParams, deployPoolByteCode } from "@/config";
