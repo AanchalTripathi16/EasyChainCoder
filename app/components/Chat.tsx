@@ -823,34 +823,36 @@ const ChatAI = () => {
                 </div>
                 <div className="ml-3 bg-gray-800/50 rounded-lg p-3 max-w-[80%]">
                   <p className="text-white">
-                    Hello! I'm SonicAgent, your local DeFi assistant. I can help
-                    you with:
+                    Hello! I&apos;m SonicAgent, your local DeFi assistant. I can
+                    help you with:
                   </p>
                   <ul className="mt-2 space-y-1 text-gray-300 text-sm">
                     <li className="flex items-center">
                       <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-                      Swapping tokens (e.g., "swap 10 USDT to S")
+                      Swapping tokens (e.g., &quot;swap 10 USDT to S&quot;)
                     </li>
                     <li className="flex items-center">
                       <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-                      Adding liquidity (e.g., "add liquidity 5 S and USDT")
+                      Adding liquidity (e.g., &quot;add liquidity 5 S and
+                      USDT&quot;)
                     </li>
                     <li className="flex items-center">
                       <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-                      Removing liquidity (e.g., "withdraw S and USDT")
+                      Removing liquidity (e.g., &quot;withdraw S and USDT&quot;)
                     </li>
                     <li className="flex items-center">
                       <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-                      Bridging tokens (e.g., "bridge 10 S to Arbitrum")
+                      Bridging tokens (e.g., &quot;bridge 10 S to
+                      Arbitrum&quot;)
                     </li>
                     <li className="flex items-center">
                       <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-                      Creating tokens (e.g., "launch a new token")
+                      Creating tokens (e.g., &quot;launch a new token&quot;)
                     </li>
                   </ul>
                   <p className="mt-2 text-white">
-                    Just tell me what you want to do, and I'll execute it for
-                    you!
+                    Just tell me what you want to do, and I&apos;ll execute it
+                    for you!
                   </p>
                 </div>
               </div>
